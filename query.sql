@@ -4,6 +4,7 @@ SELECT DISTINCT
     material.class as class,
     data.raw_data,
     data.raw_data_class,
+    data.function,
     parameter.units_output,
     paper.paper_tag,
     paper.doi as doi
@@ -13,4 +14,3 @@ JOIN material ON material.material_id = data.material_id
 JOIN parameter ON parameter.parameter_id = data.parameter_id
 WHERE parameter.name IN ('diffusion coefficient', 'half cell ocv', 'particle radius')
 AND class in ('positive', 'negative')
-AND raw_data != 'see function'
