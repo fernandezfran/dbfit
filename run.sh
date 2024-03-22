@@ -2,6 +2,6 @@
 
 git clone https://github.com/ndrewwang/liiondb.git database/liiondb
 
-pip install -r requirements.txt
+pip install -r database/liiondb/requirements.txt
 
-python3 train.py
+python3 main.py
