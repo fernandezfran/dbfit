@@ -35,7 +35,10 @@ for index, sys in database.iterrows():
             dcoeff = 1e4 * float(dcoeff)
         except ValueError:
             dcoeff = 1e4 * np.mean(
-                [float(y) for _, y in re.findall(r"\{([\d.]+),([\d.]+)\}", dcoeff)]
+                [
+                    float(y)
+                    for _, y in re.findall(r"\{([\d.]+),([\d.]+)\}", dcoeff)
+                ]
             )
     else:
         func = database.iloc[index]["dcoeff_function"]
