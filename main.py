@@ -4,17 +4,17 @@ import matplotlib.pyplot as plt
 
 import numpy as np
 
-from database import SysQuery, read_database
+from database import CleanSysData, read_database
 
 database = read_database()
 
 dcoeffs = []
 for index, sys in database.iterrows():
-    sysq = SysQuery(sys)
+    sys_data = CleanSysData(sys)
 
-    isotherm = sysq.isotherm
-    particle_size = sysq.particle_size
-    dcoeff = sysq.dcoeff
+    isotherm = sys_data.isotherm
+    particle_size = sys_data.particle_size
+    dcoeff = sys_data.dcoeff
 
     if not np.isnan(dcoeff):
         dcoeffs.append(dcoeff)

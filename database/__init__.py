@@ -22,14 +22,13 @@ warnings.filterwarnings("ignore", category=RuntimeWarning)
 
 def read_database(merge_on=["doi", "material"]):
     dfndb, _ = fn_db.liiondb()
-
     with open(PATH / "query.sql", "r") as fsql:
         query = fsql.read()
 
     return pd.read_sql(query, dfndb)
 
 
-class SysQuery:
+class CleanSysData:
     def __init__(self, sys, socs="linspace"):
         self.sys = sys
         self.socs = np.linspace(1e-4, 0.9999) if socs == "linspace" else socs
@@ -69,8 +68,12 @@ class SysQuery:
         if self.sys["isotherm_function"] is None:
             isotherm = self._raw_data_array(self.sys["isotherm"])
         else:
-            voltage = self._func_eval(self.sys["isotherm_function"])
-            isotherm = pd.DataFrame({0: self.socs, 1: voltage})
+            isotherm = pd.DataFrame(
+                {
+                    0: self.socs,
+                    1: self._func_eval(self.sys["isotherm_function"]),
+                }
+            )
 
         return isotherm
 
