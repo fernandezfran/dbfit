@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import matplotlib.pyplot as plt
-import numpy as np
-import pandas as pd
 
-from database import read_database, SysQuery
+import numpy as np
+
+from database import SysQuery, read_database
 
 database = read_database()
 
