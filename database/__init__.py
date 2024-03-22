@@ -9,6 +9,7 @@ import warnings
 
 import numpy as np
 import pandas as pd
+import scipy.stats
 
 import database.liiondb.functions.fn_db as fn_db
 
@@ -116,11 +117,11 @@ class SysQuery:
             except ValueError:
                 dcoeffs = self._raw_data_array(self.sys["dcoeff"])
                 try:
-                    dcoeff = np.mean(dcoeffs.iloc[:, 1])
+                    dcoeff = scipy.stats.gmean(dcoeffs.iloc[:, 1])
                 except IndexError:
                     dcoeff = np.nan
         else:
             dcoeffs = self._func_eval(self.sys["dcoeff_function"])
-            dcoeff = np.mean(dcoeffs)
+            dcoeff = scipy.stats.gmean(dcoeffs)
 
         return 1e4 * dcoeff
