@@ -26,40 +26,7 @@ def read_database(merge_on=["doi", "material"]):
     with open(PATH / "query.sql", "r") as fsql:
         query = fsql.read()
 
-    database = pd.read_sql(query, dfndb)
-
-    database = (
-        database.merge(database, on=merge_on)
-        .query("parameter_x != parameter_y")
-        .merge(database, on=merge_on)
-        .query("parameter != parameter_x & parameter != parameter_y")
-        .query(
-            "parameter_x == 'half cell ocv' & "
-            "parameter_y == 'particle radius' & "
-            "parameter == 'diffusion coefficient'"
-        )
-    )
-    database = database.rename(
-        columns={
-            "raw_data_x": "isotherm",
-            "raw_data_y": "particle_size",
-            "raw_data": "dcoeff",
-            "function_x": "isotherm_function",
-            "function": "dcoeff_function",
-        },
-    )[
-        [
-            "doi",
-            "material",
-            "isotherm",
-            "particle_size",
-            "dcoeff",
-            "isotherm_function",
-            "dcoeff_function",
-        ]
-    ]
-
-    return database.reset_index(drop=True)
+    return pd.read_sql(query, dfndb)
 
 
 class SysQuery:
