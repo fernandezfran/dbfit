@@ -12,6 +12,8 @@ dcoeffs = []
 for index, sys in database.iterrows():
     sys_data = CleanSysData(sys)
 
+    density = sys_data.density
+    specific_capacity = sys_data.specific_capacity
     isotherm = sys_data.isotherm
     particle_size = sys_data.particle_size
     dcoeff = sys_data.dcoeff
