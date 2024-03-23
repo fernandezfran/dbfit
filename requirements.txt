@@ -1,1 +1,5 @@
+# for other requirments like numpy, matplotlib and pandas the versions of 
+# the LiionDB are installed after the git clone
 galpynostatic
+scipy==1.6.0
+scikit-learn==1.2.1
