@@ -69,21 +69,6 @@ class CleanSysData:
         return yvals
 
     @property
-    def isotherm(self):
-        if self.sys["isotherm_function"] is None:
-            isotherm = self._raw_data_array(self.sys["isotherm"])
-        else:
-            self._socs_to_eval(self.sys["isotherm_range"])
-            isotherm = pd.DataFrame(
-                {
-                    0: self.socs_,
-                    1: self._func_eval(self.sys["isotherm_function"]),
-                }
-            )
-
-        return isotherm
-
-    @property
     def particle_size(self):
         return 1e2 * self._raw_data_value(self.sys["particle_size"])
 
@@ -104,3 +89,15 @@ class CleanSysData:
             dcoeff = scipy.stats.gmean(dcoeffs)
 
         return 1e4 * dcoeff
+
+    @property
+    def isotherm(self):
+        if self.sys["isotherm_function"] is None:
+            isotherm = self._raw_data_array(self.sys["isotherm"])
+        else:
+            self._socs_to_eval(self.sys["isotherm_range"])
+            voltage = self._func_eval(self.sys["isotherm_function"])
+            mask = np.isfinite(voltage)
+            isotherm = pd.DataFrame({0: self.socs_[mask], 1: voltage[mask]})
+
+        return isotherm
