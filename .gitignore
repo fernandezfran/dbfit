@@ -1,3 +1,6 @@
 bib/
 liiondb/
 __pycache__/
+
+experiment/_simulation.py
+experiment/lib/

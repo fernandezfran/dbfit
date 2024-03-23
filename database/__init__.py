@@ -7,8 +7,6 @@ import re
 import subprocess
 import warnings
 
-import galpynostatic as gp
-
 import numpy as np
 
 import pandas as pd
@@ -106,13 +104,3 @@ class CleanSysData:
             dcoeff = scipy.stats.gmean(dcoeffs)
 
         return 1e4 * dcoeff
-
-    @property
-    def density(self):
-        return gp.datasets.params.Electrode(self.sys["material"]).density
-
-    @property
-    def specific_capacity(self):
-        return gp.datasets.params.Electrode(
-            self.sys["material"]
-        ).specific_capacity
