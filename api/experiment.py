@@ -6,7 +6,7 @@ import numpy as np
 
 # this will be replaced by gp.simulation.GalvanostaticProfile in a future
 # release
-from experiment._simulation import GalvanostaticProfile
+from lib._simulation import GalvanostaticProfile
 
 
 def maximum_socs(

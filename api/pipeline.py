@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from database import CleanSysData, read_database
-from experiment.simulate import maximum_socs
+from experiment import maximum_socs
 from model import fit, dcoeff_prediction, k0_prediction
 
 database = read_database()
@@ -34,3 +34,5 @@ for index, sys in database.iterrows():
 
     if soc_maxs.size != 0:
         greg = fit(c_rates[: soc_maxs.size], soc_maxs, particle_size)
+
+    print(material, dcoeff, dcoeff_prediction(greg), k0_prediction(greg))
