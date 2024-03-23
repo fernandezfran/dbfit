@@ -3,3 +3,4 @@ liiondb/
 __pycache__/
 _simulation.py
 lib/
+tmp/
