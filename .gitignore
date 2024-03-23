@@ -4,3 +4,4 @@ __pycache__/
 _simulation.py
 lib/
 tmp/
+res/
