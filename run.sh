@@ -8,4 +8,4 @@ git reset --hard ee38d6b
 pip install -r requirements.txt
 cd ../../
 
-python3 main.py
+python3 pipeline.py

@@ -8,6 +8,7 @@ import numpy as np
 
 from database import CleanSysData, read_database
 from experiment.simulate import maximum_socs
+from model import fit, dcoeff_prediction, k0_prediction
 
 database = read_database()
 
@@ -30,4 +31,6 @@ for index, sys in database.iterrows():
     soc_maxs = maximum_socs(
         c_rates, density, specific_capacity, isotherm, dcoeff, particle_size
     )
-    print(soc_maxs)
+
+    if soc_maxs.size != 0:
+        greg = fit(c_rates[: soc_maxs.size], soc_maxs, particle_size)
