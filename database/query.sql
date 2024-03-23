@@ -5,7 +5,9 @@ SELECT
     first_merge.raw_data_size AS particle_size,
     second_merge.raw_data_dcoeff AS dcoeff,
     first_merge.function_ocv AS isotherm_function,
-    second_merge.function_dcoeff AS dcoeff_function
+    second_merge.function_dcoeff AS dcoeff_function,
+    first_merge.input_range_ocv AS isotherm_range,
+    second_merge.input_range_dcoeff AS dcoeff_range
 FROM (
 
     SELECT d_ocv.*, d_size.*
@@ -18,6 +20,7 @@ FROM (
             data.raw_data AS raw_data_ocv,
             data.raw_data_class AS raw_data_class_ocv,
             data.function AS function_ocv,
+            data.input_range AS input_range_ocv,
             parameter.units_output AS units_output_ocv,
             paper.paper_tag,
             paper.doi AS doi_ocv
@@ -65,6 +68,7 @@ INNER JOIN (
         data.raw_data AS raw_data_dcoeff,
         data.raw_data_class AS raw_data_class_dcoeff,
         data.function AS function_dcoeff,
+        data.input_range AS input_range_dcoeff,
         parameter.units_output AS units_output_dcoeff,
         paper.paper_tag,
         paper.doi AS doi_dcoeff

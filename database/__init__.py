@@ -22,6 +22,7 @@ warnings.filterwarnings("ignore", category=RuntimeWarning)
 
 def read_database(merge_on=["doi", "material"]):
     dfndb, _ = fn_db.liiondb()
+
     with open(PATH / "query.sql", "r") as fsql:
         query = fsql.read()
 
@@ -29,28 +30,8 @@ def read_database(merge_on=["doi", "material"]):
 
 
 class CleanSysData:
-    def __init__(self, sys, socs="linspace"):
+    def __init__(self, sys):
         self.sys = sys
-        self.socs = np.linspace(1e-4, 0.9999) if socs == "linspace" else socs
-
-    def _func_eval(self, func):
-        with open(PATH / "_func.py", "wb") as binf:
-            binf.write(func)
-
-        subprocess.run(["black", "--quiet", PATH / "_func.py"])
-
-        import database._func
-
-        importlib.reload(database._func)
-
-        try:
-            yvals = database._func.function(self.socs)
-        except TypeError:
-            yvals = database._func.function(self.socs, T=298)
-
-        os.remove(PATH / "_func.py")
-
-        return yvals
 
     def _raw_data_value(self, value):
         return float(value)
@@ -63,14 +44,39 @@ class CleanSysData:
             dtype=float,
         )
 
+    def _socs_to_eval(self, input_range):
+        self.socs_ = np.linspace(
+            float(input_range.lower), float(input_range.upper)
+        )
+
+    def _func_eval(self, func):
+        with open(PATH / "_func.py", "wb") as binf:
+            binf.write(func)
+
+        subprocess.run(["black", "--quiet", PATH / "_func.py"])
+
+        import database._func
+
+        importlib.reload(database._func)
+
+        try:
+            yvals = database._func.function(self.socs_)
+        except TypeError:
+            yvals = database._func.function(self.socs_, T=298)
+
+        os.remove(PATH / "_func.py")
+
+        return yvals
+
     @property
     def isotherm(self):
         if self.sys["isotherm_function"] is None:
             isotherm = self._raw_data_array(self.sys["isotherm"])
         else:
+            self._socs_to_eval(self.sys["isotherm_range"])
             isotherm = pd.DataFrame(
                 {
-                    0: self.socs,
+                    0: self.socs_,
                     1: self._func_eval(self.sys["isotherm_function"]),
                 }
             )
@@ -93,6 +99,7 @@ class CleanSysData:
                 except IndexError:
                     dcoeff = np.nan
         else:
+            self._socs_to_eval(self.sys["dcoeff_range"])
             dcoeffs = self._func_eval(self.sys["dcoeff_function"])
             dcoeff = scipy.stats.gmean(dcoeffs)
 
