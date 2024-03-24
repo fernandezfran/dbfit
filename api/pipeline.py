@@ -9,9 +9,10 @@ import numpy as np
 
 import pandas as pd
 
-from database import CleanSysData, read_database
+from database import read_database
 from experiment import maximum_socs
-from model import fit, dcoeff_prediction, k0_prediction
+from model import fit
+from model import dcoeff_prediction, k0_prediction
 
 PATH = pathlib.Path(os.path.join(os.path.abspath(os.path.dirname(__file__))))
 
@@ -23,18 +24,14 @@ def pipeline():
     materials, dcoeffs_db, dcoeffs_pred, k0s_pred = [], [], [], []
     for index, sys in database.iterrows():
         material = sys["material"]
-        sys_data = CleanSysData(sys)
 
         density = gp.datasets.params.Electrode(material).density
         specific_capacity = gp.datasets.params.Electrode(
             material
         ).specific_capacity
-        isotherm = sys_data.isotherm
-        particle_size = sys_data.particle_size
-        dcoeff = sys_data.dcoeff
-
-        if np.isnan(dcoeff):
-            continue
+        isotherm = pd.DataFrame(sys["isotherm"])
+        particle_size = sys["particle_size"]
+        dcoeff = sys["dcoeff"]
 
         soc_maxs = maximum_socs(
             c_rates,
@@ -68,8 +65,8 @@ def pipeline():
     pd.DataFrame(
         {
             "material": materials,
-            "dcoeff": dcoeffs_db,
-            "dcoeff_pref": dcoeffs_pred,
+            "dcoeff_db": dcoeffs_db,
+            "dcoeff_pred": dcoeffs_pred,
             "k0s_pred": k0s_pred,
         }
     ).to_csv(PATH / "res" / "predictions.csv", index=False)
