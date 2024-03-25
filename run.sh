@@ -16,3 +16,7 @@ mkdir res/
 
 # run the pipeline in the api folder
 python3 pipeline.py
+
+# mv res/ to the main folder
+cd ../
+mv api/res/ .

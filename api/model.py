@@ -4,9 +4,9 @@ import galpynostatic as gp
 
 
 def fit(c_rates, soc_maxs, particle_size):
-    greg = gp.model.GalvanostaticRegressor(d=particle_size)
-    mask = (soc_maxs < 0.99) & (soc_maxs > 0.1)
-    return greg.fit(c_rates[mask].reshape(-1, 1), soc_maxs[mask])
+    return gp.model.GalvanostaticRegressor(d=particle_size).fit(
+        c_rates, soc_maxs
+    )
 
 
 def dcoeff_prediction(greg):

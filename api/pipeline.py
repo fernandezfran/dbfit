@@ -45,7 +45,13 @@ def pipeline():
         if soc_maxs.size == 0:
             continue
 
-        greg = fit(c_rates[: soc_maxs.size], soc_maxs, particle_size)
+        mask = (soc_maxs < 0.99) & (soc_maxs > 0.1)
+
+        greg = fit(
+            c_rates[: soc_maxs.size][mask].reshape(-1, 1),
+            soc_maxs[mask],
+            particle_size,
+        )
 
         pd.DataFrame(
             {
@@ -55,7 +61,7 @@ def pipeline():
                     c_rates[: soc_maxs.size].reshape(-1, 1)
                 ),
             }
-        ).to_csv(PATH / "res" / f"fit-{index:02d}.csv", index=False)
+        ).to_csv(PATH / "res" / f"_fit-{index:02d}-{material}.csv", index=False)
 
         materials.append(material)
         dcoeffs_db.append(dcoeff)
