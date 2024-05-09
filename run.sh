@@ -17,6 +17,9 @@ mkdir res/
 # run the pipeline in the api folder
 python3 pipeline.py
 
+# get the plots
+python3 plot.py
+
 # mv res/ to the main folder
 cd ../
 mv api/res/ .

@@ -23,6 +23,7 @@ def pipeline():
     c_rates = np.logspace(-2, 2)
     materials, dcoeffs_db, dcoeffs_pred, k0s_pred = [], [], [], []
     for index, sys in database.iterrows():
+
         material = sys["material"]
 
         density = gp.datasets.params.Electrode(material).density
@@ -40,6 +41,8 @@ def pipeline():
             isotherm,
             dcoeff,
             particle_size,
+            index,
+            material,
         )
 
         if soc_maxs.size == 0:
@@ -53,6 +56,9 @@ def pipeline():
             particle_size,
         )
 
+        isotherm.to_csv(
+            PATH / "res" / f"_isotherm-{index:02d}-{material}.csv", index=False
+        )
         pd.DataFrame(
             {
                 "c_rate": c_rates[: soc_maxs.size],

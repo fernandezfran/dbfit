@@ -1,5 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+import os
+import pathlib
+
 import galpynostatic as gp
 
 import numpy as np
@@ -7,6 +10,8 @@ import numpy as np
 # this will be replaced by gp.simulation.GalvanostaticProfile in a future
 # release
 from lib._simulation import GalvanostaticProfile
+
+PATH = pathlib.Path(os.path.join(os.path.abspath(os.path.dirname(__file__))))
 
 
 def maximum_socs(
@@ -16,6 +21,8 @@ def maximum_socs(
     isotherm,
     dcoeff,
     particle_size,
+    index,
+    material,
     k0=1e-7,
 ):
     soc_maxs = []
@@ -31,6 +38,11 @@ def maximum_socs(
             isotherm=isotherm,
         )
         gprof.run()
+
+        gprof.isotherm_df.to_csv(
+            PATH / "res" / f"_sim-{index:02d}-{material}-{c_rate:.4f}.csv",
+            index=False,
+        )
 
         soc_maxs.append(np.max(gprof.isotherm_df["SOC"]))
 

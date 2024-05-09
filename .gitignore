@@ -5,3 +5,4 @@ _simulation.py
 lib/
 tmp/
 res/_*
+api/res/

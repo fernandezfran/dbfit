@@ -4,7 +4,11 @@ import glob
 import os
 import pathlib
 
+import galpynostatic as gp
+
 import matplotlib.pyplot as plt
+
+import numpy as np
 
 import pandas as pd
 
@@ -43,7 +47,9 @@ COLORS = {
 }
 
 
-def dcoeff_pred_vs_db(drange=(2e-16, 2e-7)):
+def dcoeff_pred_vs_db(drange=(1e-16, 1e-6)):
+    plt.rcParams.update({"font.size": 12})
+
     fig, ax = plt.subplots(figsize=(8, 5))
 
     df = pd.read_csv(PATH / "res" / "predictions.csv")
@@ -73,8 +79,124 @@ def dcoeff_pred_vs_db(drange=(2e-16, 2e-7)):
     fig.savefig(PATH / "res" / "predictions.png", dpi=600)
 
 
-def socmax_pred_vs_actual():
-    for fit_file in glob.glob(str(PATH / "res" / "fit-*")):
+def simulations():
+    plt.rcParams.update({"font.size": 12})
+
+    fig, axes = plt.subplots(2, 1, sharex=True, figsize=(5, 8))
+
+    for index, material, i, ax in zip(
+        ["06", "24"], ["Graphite", "LFP"], ["b", "a"], axes[::-1]
+    ):
+        df = pd.read_csv(PATH / "res" / f"_isotherm-{index}-{material}.csv")
+
+        ax.text(0.02, 1.02, f"({i}) {material}", transform=ax.transAxes)
+
+        ax.plot(
+            df.iloc[:, 0],
+            df.iloc[:, 1],
+            color=COLORS[material],
+            label="isotherm",
+        )
+
+        for i, simulation_file in enumerate(
+            glob.glob(str(PATH / "res" / f"_sim-{index}-*"))[::2]
+        ):
+            label = "C-rate simulations" if i == 0 else ""
+            df = pd.read_csv(simulation_file)
+            ax.plot(
+                df["SOC"],
+                df["Potential"],
+                color=COLORS[material],
+                ls="--",
+                alpha=0.25,
+                label=label,
+            )
+
+        ax.legend()
+
+    for ax in axes:
+        ax.set_ylabel("Potential (V)")
+
+    axes[0].set_ylim((3.2, 3.8))
+    axes[0].set_xlim((0, 1))
+
+    axes[1].set_ylim((0.07, 1.0))
+    axes[1].set_xlim((0, 1))
+    axes[1].set_xlabel("SOC")
+
+    fig.tight_layout()
+    fig.savefig(PATH / "res" / "simulations.png", dpi=600)
+
+
+def fit():
+    plt.rcParams.update({"font.size": 14})
+
+    fig, ax = plt.subplots()
+
+    for index, material in zip(["06", "24"], ["Graphite", "LFP"]):
+        df = pd.read_csv(PATH / "res" / f"_fit-{index}-{material}.csv")
+
+        ax.scatter(
+            df["c_rate"],
+            df["soc_max"],
+            marker=MARKERS[material],
+            color=COLORS[material],
+            label=f"{material} data",
+        )
+        ax.plot(
+            df["c_rate"],
+            df["soc_max_pred"],
+            color=COLORS[material],
+            label=f"{material} fit",
+        )
+
+    ax.set_xlim((1e-2, 40))
+    ax.set_xscale("log")
+    ax.set_xlabel("C-rate")
+
+    ax.set_ylim((0, 1))
+    ax.set_ylabel(r"SOC$_{\max}$")
+
+    ax.legend()
+
+    fig.tight_layout()
+    fig.savefig(PATH / "res" / "fit.png", dpi=600)
+
+
+def map():
+    plt.rcParams.update({"font.size": 14})
+
+    fig, ax = plt.subplots()
+    ax = None
+
+    particle_sizes = [0.00174, 7.3e-06]
+    dcoeffs = [3.5111704723535215e-11, 9.999939445455477e-16]
+    k0s = [9.999939445455476e-09, 2.848018622284325e-10]
+
+    C_rates = np.logspace(-2, 2).reshape(-1, 1)
+    for material, d, dcoeff, k0 in zip(
+        ["Graphite", "LFP"], particle_sizes, dcoeffs, k0s
+    ):
+        greg = gp.model.GalvanostaticRegressor(d=d)
+        greg.fit(C_rates, np.zeros(50))
+        greg.dcoeff_, greg.k0_ = dcoeff, k0
+
+        if ax is None:
+            ax = greg.plot.render_map(ax=ax, clb_label=r"SOC$_{\max}$")
+
+        ax = greg.plot.in_render_map(
+            C_rates, ax=ax, color=COLORS[material], marker=None, label=material
+        )
+
+    ax.legend(loc="upper left")
+    ax.set_xlim((-4, 1.75))
+
+    fig.tight_layout()
+    fig.savefig(PATH / "res" / "map.png", dpi=600)
+
+
+def _socmax_pred_vs_actual():
+    for fit_file in glob.glob(str(PATH / "res" / "_fit-*")):
         df = pd.read_csv(fit_file)
 
         fig, ax = plt.subplots(figsize=(7, 5))
@@ -82,10 +204,29 @@ def socmax_pred_vs_actual():
         ax.scatter(df["c_rate"], df["soc_max"])
         ax.plot(df["c_rate"], df["soc_max_pred"])
 
+        ax.set_title(fit_file)
+
         ax.set_xscale("log")
+        plt.show()
+
+
+def _isotherms():
+    for isotherm_file in glob.glob(str(PATH / "res" / "_isotherm-*")):
+        df = pd.read_csv(isotherm_file)
+
+        fig, ax = plt.subplots(figsize=(7, 5))
+
+        ax.plot(df.iloc[:, 0], df.iloc[:, 1])
+
+        ax.set_title(fit_file)
+
         plt.show()
 
 
 if __name__ == "__main__":
     dcoeff_pred_vs_db()
-    # socmax_pred_vs_actual()
+    simulations()
+    fit()
+    map()
+    # _socmax_pred_vs_actual()
+    # _isotherms()
