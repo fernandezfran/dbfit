@@ -115,7 +115,7 @@ def simulations():
         ax.legend()
 
     for ax in axes:
-        ax.set_ylabel("Potential (V)")
+        ax.set_ylabel("Potential [V]")
 
     axes[0].set_ylim((3.2, 3.8))
     axes[0].set_xlim((0, 1))
