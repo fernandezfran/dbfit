@@ -50,11 +50,14 @@ def pipeline():
 
         mask = (soc_maxs < 0.99) & (soc_maxs > 0.1)
 
-        greg = fit(
-            c_rates[: soc_maxs.size][mask].reshape(-1, 1),
-            soc_maxs[mask],
-            particle_size,
-        )
+        try:
+            greg = fit(
+                c_rates[: soc_maxs.size][mask].reshape(-1, 1),
+                soc_maxs[mask],
+                particle_size,
+            )
+        except ValueError:
+            ...
 
         isotherm.to_csv(
             PATH / "res" / f"_isotherm-{index:02d}-{material}.csv", index=False

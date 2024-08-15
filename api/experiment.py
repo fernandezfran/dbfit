@@ -7,10 +7,6 @@ import galpynostatic as gp
 
 import numpy as np
 
-# this will be replaced by gp.simulation.GalvanostaticProfile in a future
-# release
-from lib._simulation import GalvanostaticProfile
-
 PATH = pathlib.Path(os.path.join(os.path.abspath(os.path.dirname(__file__))))
 
 
@@ -30,10 +26,10 @@ def maximum_socs(
         logxi = gp.utils.logxi(c_rate, dcoeff, k0)
         logell = gp.utils.logell(c_rate, particle_size, 3, dcoeff)
 
-        gprof = GalvanostaticProfile(
-            density,
+        gprof = gp.simulation.GalvanostaticProfile(
             logxi,
             logell,
+            density=density,
             specific_capacity=specific_capacity,
             isotherm=isotherm,
         )

@@ -6,3 +6,4 @@ lib/
 tmp/
 res/_*
 api/res/
+.venv/
